@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tablas de multiplicar</title>
+    <style>
+        :root {
+            --bg: #f7f9fc;
+            --card: #fff;
+            --accent: #0b74de;
+            --muted: #556;
+        }
+        body {
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            margin: 0;
+            padding: 24px;
+            background: linear-gradient(180deg, var(--bg), #eef3fb);
+            color: #102028;
+        }
+        header {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        h1 {
+            font-size: 1.25rem;
+            margin: 0;
+        }
+        .controls {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: 18px;
+        }
+        .controls label {
+            font-size: 0.9rem;
+            color: var(--muted);
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        input[type="number"] {
+            width: 72px;
+            padding: 6px 8px;
+            border-radius: 6px;
+            border: 1px solid #cfdce9;
+            background: white;
+        }
+        button {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        button.secondary {
+            background: #e6eef8;
+            color: #06385f;
+        }
+        main {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            align-items: start;
+        }
+        .table-card {
+            background: var(--card);
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(16,32,40,0.06);
+            border: 1px solid rgba(2,20,40,0.04);
+        }
+        .table-card h2 {
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+            color: var(--accent);
+        }
+        .table-card ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #16222d;
+        }
+        footer {
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+        @media (max-width:420px){
+            .controls { gap:6px; }
+            input[type="number"]{ width:64px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Tablas de multiplicar</h1>
+    </header>
+
+    <section class="controls" aria-label="Controles">
+        <label>
+            Desde
+            <input id="start" type="number" min="0" value="1" />
+        </label>
+        <label>
+            Hasta
+            <input id="end" type="number" min="0" value="10" />
+        </label>
+        <label>
+            Multiplicador máximo
+            <input id="max" type="number" min="1" value="10" />
+        </label>
+        <button id="generate">Generar</button>
+        <button id="print" class="secondary">Imprimir</button>
+    </section>
+
+    <main id="tables" aria-live="polite"></main>
+
+    <footer>
+        Introduce los números y haz clic en "Generar". Por ejemplo: Desde 1 Hasta 10 Multiplicador máximo 10.
+    </footer>
+
+    <script>
+        // Función que crea las tablas en el contenedor
+        function generarTablas(start, end, maxMul) {
+            const container = document.getElementById('tables');
+            container.innerHTML = '';
+
+            // Ajustes si start > end
+            const min = Math.min(start, end);
+            const max = Math.max(start, end);
+
+            for (let n = min; n <= max; n++) {
+                const card = document.createElement('section');
+                card.className = 'table-card';
+                const title = document.createElement('h2');
+                title.textContent = 'Tabla del ' + n;
+                card.appendChild(title);
+
+                const list = document.createElement('ul');
+                for (let i = 1; i <= maxMul; i++) {
+                    const item = document.createElement('li');
+                    item.textContent = `${n} × ${i} = ${n * i}`;
+                    list.appendChild(item);
+                }
+                card.appendChild(list);
+                container.appendChild(card);
+            }
+        }
+
+        // Lectura de controles y generación inicial
+        function leerYGenerar() {
+            const s = parseInt(document.getElementById('start').value || '1', 10);
+            const e = parseInt(document.getElementById('end').value || '10', 10);
+            const m = parseInt(document.getElementById('max').value || '10', 10);
+            const maxMul = Math.max(1, Math.min(100, m)); // limitar a 1..100
+            generarTablas(s, e, maxMul);
+        }
+
+        document.getElementById('generate').addEventListener('click', leerYGenerar);
+        document.getElementById('print').addEventListener('click', () => window.print());
+
+        // Generar al cargar la página
+        leerYGenerar();
+    </script>
+</body>
+</html>
